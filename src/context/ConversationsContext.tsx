@@ -2,6 +2,7 @@ import { createContext, useReducer, useCallback, type ReactNode } from "react";
 import type {
   ConversationSummary,
   Message,
+  Source,
 } from "../api/contracts";
 import * as chatApi from "../api/chat.api";
 
@@ -10,6 +11,7 @@ export interface ConversationsState {
   activeConversationId: string | null;
   messagesByConversation: Record<string, Message[]>;
   isLoadingList: boolean;
+  sourcesByMessageId: Record<string, Source[]>;
 }
 
 type Action =
@@ -18,13 +20,16 @@ type Action =
   | { type: "SELECT_CONVERSATION"; payload: string | null }
   | { type: "SET_MESSAGES"; payload: { conversationId: string; messages: Message[] } }
   | { type: "APPEND_MESSAGES"; payload: { conversationId: string; messages: Message[] } }
-  | { type: "ADD_CONVERSATION"; payload: ConversationSummary };
+  | { type: "ADD_CONVERSATION"; payload: ConversationSummary }
+  | { type: "SET_SOURCES"; payload: { messageId: string; sources: Source[] } }
+  | { type: "CLEAR_CONVERSATION_SOURCES"; payload: { conversationId: string } };
 
 const initialState: ConversationsState = {
   conversations: [],
   activeConversationId: null,
   messagesByConversation: {},
   isLoadingList: false,
+  sourcesByMessageId: {},
 };
 
 function reducer(
@@ -65,6 +70,28 @@ function reducer(
         ...state,
         conversations: [action.payload, ...state.conversations],
       };
+    case "SET_SOURCES":
+      return {
+        ...state,
+        sourcesByMessageId: {
+          ...state.sourcesByMessageId,
+          [action.payload.messageId]: action.payload.sources,
+        },
+      };
+    case "CLEAR_CONVERSATION_SOURCES": {
+      const messageIds = new Set(
+        (state.messagesByConversation[action.payload.conversationId] ?? []).map(
+          (m) => m.id,
+        ),
+      );
+      const remaining: Record<string, Source[]> = {};
+      for (const [id, srcs] of Object.entries(state.sourcesByMessageId)) {
+        if (!messageIds.has(id)) {
+          remaining[id] = srcs;
+        }
+      }
+      return { ...state, sourcesByMessageId: remaining };
+    }
     default:
       return state;
   }

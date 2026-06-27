@@ -33,9 +33,19 @@ export interface SendMessageRequest {
   content: string;
 }
 
+export interface Source {
+  id: string;
+  title: string;
+  excerpt: string;
+  relevance: number;
+  documentUrl: string | null;
+  filename: string | null;
+}
+
 export interface SendMessageResponse {
   userMessage: Message;
   assistantMessage: Message;
+  sources?: Source[];
 }
 
 export interface CreateConversationRequest {

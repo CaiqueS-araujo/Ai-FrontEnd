@@ -53,6 +53,15 @@ export function useChat(conversationId: string | null): UseChatReturn {
             messages: [res.userMessage, res.assistantMessage],
           },
         });
+        if (res.sources && res.sources.length > 0) {
+          dispatch({
+            type: "SET_SOURCES",
+            payload: {
+              messageId: res.assistantMessage.id,
+              sources: res.sources,
+            },
+          });
+        }
       } catch (err) {
         const msg =
           err instanceof Error ? err.message : "Erro ao enviar mensagem";

@@ -1,14 +1,20 @@
 import { useEffect, useRef } from "react";
-import type { Message } from "../../api/contracts";
+import type { Message, Source } from "../../api/contracts";
 import { MessageBubble } from "./MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
+import type { SourcesMap } from "../../domain/types";
 
 interface MessageListProps {
   messages: Message[];
   isTyping?: boolean;
+  fontesData?: SourcesMap;
 }
 
-export function MessageList({ messages, isTyping = false }: MessageListProps) {
+export function MessageList({
+  messages,
+  isTyping = false,
+  fontesData = {},
+}: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,9 +28,10 @@ export function MessageList({ messages, isTyping = false }: MessageListProps) {
       aria-label="Mensagens"
       className="flex flex-col gap-3 overflow-y-auto p-4"
     >
-      {messages.map((msg) => (
-        <MessageBubble key={msg.id} message={msg} />
-      ))}
+      {messages.map((msg) => {
+        const sources: Source[] = fontesData[msg.id] ?? [];
+        return <MessageBubble key={msg.id} message={msg} sources={sources} />;
+      })}
       {isTyping && <TypingIndicator />}
       <div ref={bottomRef} />
     </div>
