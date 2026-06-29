@@ -1,5 +1,5 @@
 import type { Message } from "../../api/contracts";
-import type { UploadState } from "../../domain/types";
+import type { UploadState, SourcesMap } from "../../domain/types";
 import { MessageList } from "./MessageList";
 import { MessageComposer } from "./MessageComposer";
 import { FileDropzone } from "../upload/FileDropzone";
@@ -11,6 +11,7 @@ interface ChatWindowProps {
   isSending: boolean;
   onUploadFile: (file: File) => void;
   uploadState: UploadState;
+  fontesData?: SourcesMap;
 }
 
 export function ChatWindow({
@@ -19,10 +20,11 @@ export function ChatWindow({
   isSending,
   onUploadFile,
   uploadState,
+  fontesData = {},
 }: ChatWindowProps) {
   return (
     <div className="flex h-full flex-col">
-      <MessageList messages={messages} isTyping={isSending} />
+      <MessageList messages={messages} isTyping={isSending} fontesData={fontesData} />
       <div className="border-t bg-gray-50 p-2">
         <FileDropzone onFileSelected={onUploadFile} disabled={isSending} />
         {uploadState.status !== "idle" && (

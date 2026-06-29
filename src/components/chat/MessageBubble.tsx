@@ -1,10 +1,12 @@
-import type { Message } from "../../api/contracts";
+import type { Message, Source } from "../../api/contracts";
+import { SourcePanel } from "./SourcePanel";
 
 interface MessageBubbleProps {
   message: Message;
+  sources?: Source[];
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, sources = [] }: MessageBubbleProps) {
   const isUser = message.role === "USER";
 
   return (
@@ -29,6 +31,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             minute: "2-digit",
           })}
         </time>
+        {!isUser && sources.length > 0 && <SourcePanel sources={sources} />}
       </div>
     </div>
   );
