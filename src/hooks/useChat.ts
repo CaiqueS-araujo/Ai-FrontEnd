@@ -50,7 +50,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
           type: "APPEND_MESSAGES",
           payload: {
             conversationId,
-            messages: [res.userMessage, res.assistantMessage],
+            messages: [res.assistantMessage],
           },
         });
         if (res.sources && res.sources.length > 0) {
